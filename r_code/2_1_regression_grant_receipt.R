@@ -9,9 +9,9 @@
 ###############################################################################
 
 pacman::p_load(
-  MASS, tidyr, purrr, tidyverse, stringi, stringr, readr,
-  tibble, lubridate, margins, car, pscl, ggplot2, ggrepel,
-  scales, Hmisc, naniar, xtable, dotwhisker, forcats, dplyr, broom, grid
+  dplyr, tidyr, purrr, stringr, readr, lubridate,
+  ggplot2, scales, forcats, broom,
+  MASS, car, pscl, margins, Hmisc
 )
 
 ###############################################################################
@@ -131,28 +131,7 @@ summary(final_model_binary)
 car::vif(final_model_binary)
 print(pR2(final_model_binary))
 
-# # Model B: cumulative count of prior wins (commented out to save compute)
-# final_model_cumulative <- glm(
-#   update(shared_rhs, project_status ~ . + cum_prior_projects),
-#   data   = presi_model,
-#   family = binomial
-# )
-# cat("\n===== Model B: cumulative cum_prior_projects =====\n")
-# summary(final_model_cumulative)
-# car::vif(final_model_cumulative)
-# print(pR2(final_model_cumulative))
-
-# ── Marginal effects (Model A) ──────────────────────────────────────────────
-# margins() runtime is proportional to number of variables.  Computing AMEs
-# for all ~100 coefficients (82 regions + 13 directions + key vars) takes
-# ~40 min.  Splitting into substantive vars (~17) and direction FE (~13)
-# avoids the 82-region Jacobian and cuts runtime to ~10 min.
-#
-# Further optimisation for M2 (8 performance cores): dispatch each variable
-# as a separate margins() call via parallel::mclapply().  Each call handles
-# one variable, so the Jacobian is trivially small; all cores fire at once.
-# No package changes — mclapply is a base R parallel wrapper.
-
+# Marginal effects for key variables, dispatched in parallel.
 key_vars <- c(
   "gemini_quality", "sum_requested_m", "cum_prior_grants_m",
   "cofinancing_share", "implementation_length_months",
@@ -934,61 +913,6 @@ no_cof <- presi_model %>%
   subset(project_status == 1 & cofinancing_share == 0)
 dir.create("data/data_results", showWarnings = FALSE, recursive = TRUE)
 write_csv(no_cof, "data/data_results/no_cofinancing_winners_gemini25_20260214.csv")
-
-###############################################################################
-# APPENDIX — Religious-organisation extension (commented out; see
-#   3_reciept_regression_relig_20260316.R for the full standalone version)
-#
-# is_religious is already built in section 2b and lives in presi_model.
-# Uncomment the block below to run Models C / D alongside A / B.
-###############################################################################
-
-# # ── Shared RHS with religious indicator ──────────────────────────────────────
-# shared_rhs_relig <- update(shared_rhs, ~ . + is_religious)
-#
-# # Model C: binary prior-winner + is_religious
-# final_model_binary_relig <- glm(
-#   update(shared_rhs_relig, project_status ~ . + has_won_before),
-#   data   = presi_model,
-#   family = binomial
-# )
-#
-# # Model D: cumulative prior wins + is_religious
-# final_model_cumulative_relig <- glm(
-#   update(shared_rhs_relig, project_status ~ . + cum_prior_projects),
-#   data   = presi_model,
-#   family = binomial
-# )
-#
-# cat("\n===== Model C: binary + is_religious =====\n")
-# summary(final_model_binary_relig)
-# print(pR2(final_model_binary_relig))
-# cat(sprintf("OR for is_religious: %.3f\n",
-#             exp(coef(final_model_binary_relig)["is_religious"])))
-#
-# cat("\n===== Model D: cumulative + is_religious =====\n")
-# summary(final_model_cumulative_relig)
-# print(pR2(final_model_cumulative_relig))
-# cat(sprintf("OR for is_religious: %.3f\n",
-#             exp(coef(final_model_cumulative_relig)["is_religious"])))
-#
-# # AMEs
-# s_c <- summary(margins(final_model_binary_relig))
-# cat("\n--- AMEs Model C (selected) ---\n")
-# print(s_c[s_c$factor %in% c("has_won_before", "is_religious",
-#                               "cum_prior_grants_m", "sum_requested_m"), ])
-#
-# s_d <- summary(margins(final_model_cumulative_relig))
-# cat("\n--- AMEs Model D (selected) ---\n")
-# print(s_d[s_d$factor %in% c("cum_prior_projects", "is_religious",
-#                               "cum_prior_grants_m", "sum_requested_m"), ])
-#
-# # ATT: AME evaluated only over religious-org rows
-# att_c <- summary(margins(final_model_binary_relig,
-#                          variables = "is_religious",
-#                          data      = subset(presi_model, is_religious == 1)))
-# cat(sprintf("\nATT (Model C) = %.2f pp  (95%% CI: %.2f, %.2f pp)  p = %.4f\n",
-#             att_c$AME * 100, att_c$lower * 100, att_c$upper * 100, att_c$p))
 
 ###############################################################################
 # 13) Time-trend plots: application quality & co-financing share

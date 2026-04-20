@@ -10,12 +10,8 @@
 ###############################################################################
 
 pacman::p_load(
-  MASS, tidyr, purrr, progress, tidyverse, stringi, stringr, readr, httr,
-  tibble, lubridate, margins, car, pscl, detectseparation, ggplot2, ggrepel,
-  zoo, writexl, stringdist, fuzzyjoin, readxl, openxlsx, caret, stats, scales,
-  tm, wordcloud, RColorBrewer, quanteda, quanteda.textstats, readtext, Hmisc,
-  Rcpp, naniar, psych, lavaan, xtable, mice, tidymodels, UpSetR, Amelia,
-  dotwhisker, forcats, dplyr, broom, grid
+  dplyr, tidyr, purrr, stringr, readr, lubridate, ggplot2, scales,
+  zoo, Hmisc, naniar, xtable
 )
 
 ###############################################################################

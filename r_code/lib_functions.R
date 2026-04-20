@@ -1,42 +1,9 @@
-# Author:GI
-# This script is to request many API calls to the OpenAI ChatGPT
-pacman::p_load(dplyr, tidyr, purrr, progress, tidyverse,
-               stringi, stringr, readr, httr,
-               tibble,
-               lubridate)
+# Helpers for OpenAI ChatGPT batch requests.
+pacman::p_load(dplyr, purrr, progress, stringr, readr, httr, tibble)
 
-# OpenAI API key, read from the OPENAI_API_KEY environment variable.
 api_ours <- Sys.getenv("OPENAI_API_KEY")
 if (!nzchar(api_ours)) stop("Set OPENAI_API_KEY before sourcing this file.")
-########################################################################
-########################################################################
-# Function: ask_chatgpt
-######################################################OPENAI_API_KEY##################
-########################################################################
-# Description: This function makes a request to the ChatGPT API with a user-defined prompt
-# and retrieves the model's response.
-#
-# Arguments:
-#   - prompt: A character string containing the system-level message that you want to send to ChatGPT.
-#   - column_text: A character string containing the user-level message that you want to send to ChatGPT.
-#   - model: A character string specifying the ChatGPT model to use. Default is "gpt-3.5-turbo".
-#   - api_key: A character string representing your API key for authentication.
-#                It should be kept secure and not hard-coded in the script for security reasons.
-#              Default is a placeholder API key.
-#
-# Comments:
-# - This function sends a POST request to the ChatGPT API endpoint with the provided prompt.
-# - It requires an API key for authentication, and the key should be stored securely.
-# - The response from the API is processed to extract the model's reply.
-# - The extracted response is trimmed to remove any leading or trailing spaces.
-# - The function returns the model's response as a character string.
 
-pacman::p_load(dplyr, tidyr, purrr, progress, tidyverse,
-               stringi, stringr, readr, httr,
-               tibble,
-               lubridate)
-
-# Calls the ChatGPT API with the given prompt and user content and returns the answer
 ask_chatgpt <- function(prompt,
                         column_text,
                         model = "gpt-4o-mini",

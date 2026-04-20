@@ -1,14 +1,8 @@
-  # Author: GI, following EK script
-
-
-# This script is to request many api calls to the openai chatgpt
-# updated: makes it ignore errors skipping them, so that we can go through them again later
-# do not read in text as UTF-8 otherwise instead of readable text you will have hmlt5 letters like <U0838383> instead of Hungarian "i"
-library(pacman)
+# Batch-calls the OpenAI / Ollama helpers in lib_functions.R and
+# lib_askai_ollama.R over grant-application texts.
 source("r_code/lib_functions.R", encoding = "utf-8")
 source("r_code/lib_askai_ollama.R")
-pacman::p_load(ggplot2,zoo,httr,dplyr,writexl,stringr,stringdist,fuzzyjoin,
-               readxl,lubridate,openxlsx,stringr)
+pacman::p_load(dplyr, stringr, readr, writexl, openxlsx)
 
 input_path<-("data/data_large/application_texts_unique.csv")
 input_path2<-("data/data_large/all_projects_data_backup.csv")
